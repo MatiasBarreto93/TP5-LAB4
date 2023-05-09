@@ -3,7 +3,7 @@ import {Phone, GeoAlt, Envelope, Facebook} from "react-bootstrap-icons";
 
 export const Footer = () =>{
     return(
-        <Container fluid className="text-center mt-2 mb-2 text-white bg-dark p-5">
+        <Container fluid className="text-center mt-2 mb-2 text-white bg-dark p-5 bottom-0">
             Informacion de contacto
             <div className="text-center">
             <Row>
