@@ -1,65 +1,27 @@
 package com.lab4.tp5backend.controller;
 
 import com.lab4.tp5backend.model.Instrumento;
-import com.lab4.tp5backend.service.InstrumentoService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.lab4.tp5backend.service.InstrumentoServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/v1")
-public class InstrumentoController {
+@CrossOrigin(origins = "*")
+@RequestMapping("/api/v1/instrumentos")
+public class InstrumentoController extends GenericControllerImpl<Instrumento, InstrumentoServiceImpl>{
 
-    final InstrumentoService instrumentoService;
+    //Get All @GET
+    //http://localhost:8080/api/v1/roles
 
-    public InstrumentoController(InstrumentoService instrumentoService) {
-        this.instrumentoService = instrumentoService;
-    }
+    //Get One @GET
+    //http://localhost:8080/api/v1/roles/id
 
-    @RequestMapping("/")
-    @CrossOrigin(origins = "http://localhost:5173")
-    public String helloWorld(){
-        return "Hello World from Spring Boot";
-    }
+    //Create @POST
+    //http://localhost:8080/api/v1/roles + JSON
 
-    @GetMapping("/instrumentos")
-    @CrossOrigin(origins = "http://localhost:5173")
-    public List<Instrumento> listaInstrumentos(){
-        return instrumentoService.getList();
-    }
+    //Update @PUT
+    //http://localhost:8080/api/v1/roles/id + JSON
 
-    @GetMapping("/instrumento/{id}")
-    @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<Instrumento> obtenerInstrumento(@PathVariable long id){
-        Instrumento instrumentoId = instrumentoService.getByID(id);
-        return ResponseEntity.ok(instrumentoId);
-    }
+    //Delete @DELETE
+    //http://localhost:8080/api/v1/roles/id
 
-    @PostMapping("/instrumento/guardar")
-    @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<Instrumento> guardarInstrumento(@RequestBody Instrumento instrumento){
-        Instrumento nuevoInstrumento = instrumentoService.save(instrumento);
-        return new ResponseEntity<>(nuevoInstrumento, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/instrumento/actualizar/{id}")
-    @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<Instrumento> actualizarInstrumento(@PathVariable long id ,@RequestBody Instrumento instrumento){
-        Instrumento nuevoInstrumento = instrumentoService.getByID(id);
-        //Todos los get & set
-        nuevoInstrumento.setNombre(instrumento.getNombre());
-        return new ResponseEntity<>(nuevoInstrumento, HttpStatus.CREATED);
-    }
-
-    @DeleteMapping("/instrumento/borrar/{id}")
-    @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<HashMap<String, Boolean>> eliminarInstrumento(@PathVariable long id){
-        this.instrumentoService.delete(id);
-        HashMap<String, Boolean> estadoInstrumento = new HashMap<>();
-        estadoInstrumento.put("Eliminado", true);
-        return ResponseEntity.ok(estadoInstrumento);
-    }
 }
