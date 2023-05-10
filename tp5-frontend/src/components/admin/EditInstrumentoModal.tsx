@@ -28,7 +28,6 @@ export const InstrumentoEditModal: React.FC<Props> = ({show, onHide, instrumento
             };
         });
     };
-
     const handleSaveChanges = async () => {
         if (instrumentoActualizado) {
             try {
