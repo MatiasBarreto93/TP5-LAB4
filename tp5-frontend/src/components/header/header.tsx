@@ -1,31 +1,16 @@
 import {Button, Container, Form, Nav, Navbar} from "react-bootstrap";
-import React, {useState} from "react";
-
 
 interface Props {
-    searchTerm: string;
-    onSearchTermChange: (searchTerm: string) => void;
+    searchTerm?: string;
+    onSearchTermChange?: (searchTerm: string) => void;
 }
 
-export const Header = ({ searchTerm = "", onSearchTermChange }: Props) =>{
-
-    const [, setSearchTerm] = useState("");
-
-    const handleSearch = (searchTerm: string) => {
-
-        onSearchTermChange(searchTerm);
-    };
-
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const searchTerm = event.target.value;
-        setSearchTerm(searchTerm);
-        onSearchTermChange(searchTerm);
-    };
+export const Header = ({ searchTerm, onSearchTermChange }: Props) =>{
 
     return (
         <Navbar bg="dark" variant="dark">
             <Container>
-                <Navbar.Brand href="/">Navbar</Navbar.Brand>
+                <Navbar.Brand href="/">Hendrix</Navbar.Brand>
                 <Nav className="me-auto">
                     <Nav.Link href="/productos">Productos</Nav.Link>
                     <Nav.Link href="/dondeestamos">Donde Estamos</Nav.Link>
@@ -43,9 +28,9 @@ export const Header = ({ searchTerm = "", onSearchTermChange }: Props) =>{
                         className="me-2"
                         aria-label="Search"
                         value={searchTerm}
-                        onChange={handleInputChange}
+                        onChange={(e) => onSearchTermChange?.(e.target.value)}
                     />
-                    <Button variant="outline-success" onClick={() => handleSearch(searchTerm)}>
+                    <Button variant="outline-success">
                         Buscar
                     </Button>
                 </Form>

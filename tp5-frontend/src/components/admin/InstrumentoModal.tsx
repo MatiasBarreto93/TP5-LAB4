@@ -1,4 +1,4 @@
-import {Alert, Button, Col, Form, Modal, Row} from "react-bootstrap";
+import { Button, Col, Form, Modal, Row} from "react-bootstrap";
 import {Instrumento} from "../../interfaces/instrumento.ts";
 import React, { useState} from "react";
 import {toast} from "react-toastify";
@@ -11,7 +11,9 @@ interface Props {
     fetchInstrumentos: () => void;
 }
 export const InstrumentoModal = ({ show, onHide, title, ins, fetchInstrumentos }: Props)=>{
-    //console.log("Log en InstrumentoModal" + ins)
+
+    //Si se proporciona un valor inicial a través de la variable "ins", se utiliza ese valor. De lo contrario, se utiliza un objeto con campos vacíos
+    //Este se utiliza para la creacion de un nuevo Instrumento
     const [instrumento, setInstrumento] = useState<Instrumento | undefined>(ins ? ins : {
         id: 0,
         nombre: "",
@@ -24,56 +26,77 @@ export const InstrumentoModal = ({ show, onHide, title, ins, fetchInstrumentos }
         descripcion: "",
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setInstrumento((prevState) => prevState ? {
-            ...prevState,
-            [name]: value,
-        } : undefined);
+    //En vez de hacer el set por cada atributo de la interface Ej:
+    // const [nombre, setNombre] = useState<string | undefined>(ins?.nombre || '');
+    // const [marca, setMarca] = useState<string | undefined>(ins?.nombre || '');
+    // Y crear la siguiente funcion por cada uno de los atributos para manejar su estado
+    /*
+     *   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+     *   const { value } = event.target;
+     *  setNombre(value);};
+     *
+     * */
+    //Se utiliza esta forma para evitar tanta redundancia
+    //Actualiza de forma automatica los valores recibidos del objeto "ins" y los almacenados en el formulario.
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {                                            //Observa un evento en el HTMLInput del formulario
+        const { name, value } = e.target;                                                                 //Del input ("target"), se extrae el "name" y "value"
+        setInstrumento((prevState) => prevState ? {                            //Actualiza el estado "set"
+            ...prevState,                                                                                               // crear una copia del estado anterior
+            [name]: value,                                                                                              // se actualiza el valor de la propiedad cuyo nombre coincide con el valor de la variable "name"
+        } : undefined);                                                                                                 // maneja el caso en el que el estado anterior sea undefined (crear un nuevo instrumento)
     };
 
-    const handleSaveUpdate= () =>{
-        const isNew = !instrumento.id; // Si no hay ID, entonces es una creación
-        const url = isNew ? 'http://localhost:8080/api/v1/instrumentos' : `http://localhost:8080/api/v1/instrumentos/${instrumento.id}`;
+    //Crear o actualizar un instrumento dependiendo del props "title" que recibe desde el componente padre "InstrumentoTable"
+    const handleSaveUpdate = async () => {
+        const isNew = !instrumento.id; //Si no hay id es un nuevo instrumento y se selecciona la URL
+        const url = isNew
+            ? "http://localhost:8080/api/v1/instrumentos"
+            : `http://localhost:8080/api/v1/instrumentos/${instrumento.id}`;
 
-        fetch(url, {
-            method: isNew ? 'POST' : 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(instrumento)
-        })
-            .then(response => {
-                if (response.ok) {
-                    onHide(); // Cerrar el modal si la solicitud fue exitosa
-                    fetchInstrumentos(); //Actualizar la tabla
-                    toast.success(isNew ? 'Instrumento Creado' : 'Instrumento Actualizado ', {
-                        position: "top-center"
-                    })
-                } else {
-                    throw new Error('Ha ocurrido un error'); // Mostrar mensaje de error si la solicitud falló
-                }
-            })
-            .catch(error => {
-                console.log(error);
-                // Mostrar mensaje de error al usuario
+        try {
+            const response = await fetch(url, {
+                method: isNew ? "POST" : "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(instrumento),
             });
-    }
 
-    const borrarInstrumento = () => {
+            //Si la transaccion es correcta
+            if (response.ok) {
+                onHide();                                                                                               //Se cierra el modal
+                await fetchInstrumentos();                                                                              // Esperar a que se complete la actualización de la tabla si es exitoso
+                toast.success(isNew ? "Instrumento Creado" : "Instrumento Actualizado", {                //Notificacion exito
+                    position: "top-center",
+                });
+            } else {
+                toast.error("Ah ocurrido un error", {                                                    //Notificacion error
+                    position: "top-center",
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            // Mostrar mensaje de error al usuario
+        }
+    };
+
+    const borrarInstrumento = async () => {
         if (instrumento) {
             const id = instrumento.id;
-            fetch(`http://localhost:8080/api/v1/instrumentos/${id}`, {
-                method: "DELETE"}
-            )
-                .then(() => {
-                    onHide();
-                    fetchInstrumentos();
-                    toast.success("Instrumento Borrado", {
-                        position: "top-center"
-                    })
-                })
-                .catch(error => console.error(error));
+            try {
+                await fetch(`http://localhost:8080/api/v1/instrumentos/${id}`, {
+                    method: "DELETE",
+                });
+                onHide();
+                await fetchInstrumentos(); // Esperar a que se complete la actualización de la tabla
+                toast.success("Instrumento Borrado", {
+                    position: "top-center",
+                });
+            } catch (error) {
+                toast.error("Ah ocurrido un error", {                                                    //Notificacion error
+                    position: "top-center",
+                });
+            }
         }
     };
 
@@ -88,6 +111,7 @@ export const InstrumentoModal = ({ show, onHide, title, ins, fetchInstrumentos }
 
     return (
         <>
+            {/*Si el Props "title" contiene la palabra borrar, se renderiza el modal de delete, sino el de crear/editar*/}
             {title.toLowerCase().includes("borrar")
                 ?
                 <Modal show={show} onHide={onHide} centered backdrop="static">
@@ -113,15 +137,16 @@ export const InstrumentoModal = ({ show, onHide, title, ins, fetchInstrumentos }
                     </Modal.Header>
                     <Modal.Body>
                         <Form>
+                            {/*1 FILA y 2 COLUMNAS , para que el formulario no sea tan vertical*/}
                             <Row>
                                 <Col>
                                     <Form.Group controlId="formNombre">
                                         <Form.Label>Nombre</Form.Label>
                                         <Form.Control
-                                            name="nombre"
+                                            name="nombre"                                                               //Tiene que estar para poder editar hace que cada input sea unico
                                             type="text"
-                                            value={instrumento?.nombre || ''}
-                                            onChange={handleChange}
+                                            value={instrumento?.nombre || ''}                                           //Si es crear el campo esta vacio
+                                            onChange={handleChange}                                                     //Permite el cambio y que se guarden los estados
                                         />
                                     </Form.Group>
                                     <Form.Group controlId="formMarca">

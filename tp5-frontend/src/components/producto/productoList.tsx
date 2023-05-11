@@ -1,38 +1,33 @@
-import { useState, useEffect } from 'react';
-import { Instrumento } from "../../interfaces/instrumento.ts";
 import {InstrumentoCard} from "./instrumentoCard.tsx";
+import {useEffect, useState} from "react";
+import {Instrumento} from "../../interfaces/instrumento.ts";
 
 interface Props {
-    searchTerm: string;
+    searchTerm?: string;
 }
 
-export const InstrumentoList = ({ searchTerm = "" }: Props) => {
+export const InstrumentoList = ({ searchTerm }: Props) => {
+
     const [instrumentos, setInstrumentos] = useState<Instrumento[]>([]);
-    const [filteredInstrumentos, setFilteredInstrumentos] = useState<Instrumento[]>([]);
 
     useEffect(() => {
         fetch("http://localhost:8080/api/v1/instrumentos")
             .then((response) => response.json())
-            .then((data) => {
-                setInstrumentos(data);
-                setFilteredInstrumentos(data);
-            });
+            .then((data) => setInstrumentos(data));
     }, []);
 
-    useEffect(() => {
-        if (searchTerm.trim() === "") {
-            setFilteredInstrumentos(instrumentos);
-            return;
+    const filteredInstrumentos = instrumentos.filter((instrumento) => {
+        if (searchTerm) {
+            const searchTermLowerCase = searchTerm.toLowerCase();
+            return (
+                instrumento.nombre.toLowerCase().includes(searchTermLowerCase) ||
+                instrumento.marca.toLowerCase().includes(searchTermLowerCase) ||
+                instrumento.modelo.toLowerCase().includes(searchTermLowerCase)
+            );
+        } else {
+            return true;
         }
-
-        const filtered = instrumentos.filter(
-            (instrumento) =>
-                instrumento.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                instrumento.marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                instrumento.modelo.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredInstrumentos(filtered);
-    }, [searchTerm, instrumentos]);
+    });
 
     return (
         <>

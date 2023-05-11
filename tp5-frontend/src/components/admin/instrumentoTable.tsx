@@ -4,21 +4,25 @@ import {PencilFill, Trash} from "react-bootstrap-icons";
 import {Button, Table} from "react-bootstrap";
 import {InstrumentoModal} from "./InstrumentoModal.tsx";
 
-
 export const InstrumentoTable = () => {
 
     const [instrumentos, setInstrumentos] = useState<Instrumento[]>([]);
+
+    //Limito la cantidad de caracteres que voy a mostrar del campo descripcion
     const MAX_CARACTERES_DESCRIPCION = 30;
 
     useEffect(() => {
         fetchInstrumentos();
     }, []);
 
-    const fetchInstrumentos = () => {
-        fetch('http://localhost:8080/api/v1/instrumentos')
-            .then(response => response.json())
-            .then(data => setInstrumentos(data))
-            .catch(error => console.error(error));
+    const fetchInstrumentos = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/instrumentos');
+            const data = await response.json();
+            setInstrumentos(data);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     //Manejo de Modal
@@ -26,12 +30,11 @@ export const InstrumentoTable = () => {
     const [title, setTitle] = useState("");
     const [instrumento, setInstrumento] = useState<Instrumento | null>(null);
 
-    //Render de Componente hasta que el usuario haga click
+    //Logica del Modal
     const handleClick = (newTitle: string, instrumento?: Instrumento) => {
-        setTitle(newTitle);
-        //console.log( "Instrumento en handleClick: " + instrumento)
-        setInstrumento(instrumento);
-        setShowModal(true);
+        setTitle(newTitle);                                                                                             //Cambio el titulo del modal al hacer click en algunos de los botones
+        setInstrumento(instrumento);                                                                                    //Paso el instrumento al modal si es que hay alguno seleccionado
+        setShowModal(true);                                                                                       //Renderizo el modal unicamente y solo cuando el usuario haga click
     };
 
     return(
@@ -72,8 +75,7 @@ export const InstrumentoTable = () => {
                                 color="#FBC02D"
                                 size={24}
                                 onClick={() => {
-                                    //console.log("Instrumento de la fila: " + ins);
-                                    handleClick("Editar Instrumento", ins);
+                                    handleClick("Editar Instrumento", ins);                                     //Args: "title", "Intrumento"
                                 }}
                                 title="Editar instrumento"
                                 onMouseEnter={() => {document.body.style.cursor = 'pointer'}}
@@ -86,7 +88,7 @@ export const InstrumentoTable = () => {
                                 size={24}
                                 title="Borrar instrumento"
                                 onClick={() => {
-                                    handleClick("¿Borrar Instrumento?", ins);
+                                    handleClick("¿Borrar Instrumento?", ins);                                   //Args: "title", "Intrumento"
                                 }}
                                 onMouseEnter={() => {document.body.style.cursor = 'pointer'}}
                                 onMouseLeave={() => {document.body.style.cursor = 'default'}}
@@ -96,6 +98,8 @@ export const InstrumentoTable = () => {
                 ))}
                 </tbody>
             </Table>
+            {/*Expresión condicional que se utiliza para renderizar el componente <InstrumentoModal/> en caso de que la variable showModal sea verdadera (o true).*/}
+            {/*Entonces se renderiza unicamente cuando el usuario hace click en alguno de los 3 botones*/}
             {showModal && (
                 <InstrumentoModal
                     ins={instrumento}

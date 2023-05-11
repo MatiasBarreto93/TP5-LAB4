@@ -6,14 +6,12 @@ import {Productos} from "./components/producto/productos.tsx";
 import {Administracion} from "./components/admin/administracion.tsx";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import {Layout} from "./components/layout/layout.tsx";
 function App() {
 
-  return (
-      <>
-          <Layout>
-              <ToastContainer/>
-              <Router>
+    return (
+        <>
+            <ToastContainer/>
+            <Router>
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/productos" element={<Productos/>} />
@@ -21,10 +19,9 @@ function App() {
                     <Route path="/productos/:id" Component={DetalleProducto} />
                     <Route path="/administracion" element={<Administracion/>}/>
                 </Routes>
-              </Router>
-          </Layout>
-      </>
-  )
+            </Router>
+        </>
+    )
 }
 
 export default App

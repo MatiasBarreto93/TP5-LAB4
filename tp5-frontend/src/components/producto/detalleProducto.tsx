@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {Card, Button, Container} from "react-bootstrap";
 import { Instrumento } from "../../interfaces/instrumento";
+import {Layout} from "../layout/layout.tsx";
 
 export const DetalleProducto = () => {
     const [instrumento, setInstrumento] = useState<Instrumento>();
@@ -21,6 +22,7 @@ export const DetalleProducto = () => {
     }, [id]);
 
     return (
+        <Layout>
             <Container fluid>
                 {instrumento ? (
                     <Card key={instrumento.id} className="mb-3 mt-3 p-2 m-2">
@@ -57,5 +59,6 @@ export const DetalleProducto = () => {
                     <p>El Producto no existe</p>
                 )}
             </Container>
+        </Layout>
     );
 };
