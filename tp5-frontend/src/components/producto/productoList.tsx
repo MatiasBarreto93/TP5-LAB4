@@ -6,25 +6,39 @@ interface Props {
     searchTerm: string;
 }
 
-export const InstrumentoList = ({ searchTerm }: Props) => {
+export const InstrumentoList = ({ searchTerm = "" }: Props) => {
     const [instrumentos, setInstrumentos] = useState<Instrumento[]>([]);
+    const [filteredInstrumentos, setFilteredInstrumentos] = useState<Instrumento[]>([]);
 
     useEffect(() => {
-        let url = "http://localhost:8080/api/v1/instrumentos";
-        if (searchTerm) {
-            url = `http://localhost:8080/api/v1/instrumentos/search?filtro=${searchTerm}`;
+        fetch("http://localhost:8080/api/v1/instrumentos")
+            .then((response) => response.json())
+            .then((data) => {
+                setInstrumentos(data);
+                setFilteredInstrumentos(data);
+            });
+    }, []);
+
+    useEffect(() => {
+        if (searchTerm.trim() === "") {
+            setFilteredInstrumentos(instrumentos);
+            return;
         }
 
-        fetch(url)
-            .then(response => response.json())
-            .then(data => setInstrumentos(data));
-    }, [searchTerm]);
+        const filtered = instrumentos.filter(
+            (instrumento) =>
+                instrumento.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                instrumento.marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                instrumento.modelo.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredInstrumentos(filtered);
+    }, [searchTerm, instrumentos]);
 
     return (
-        <div>
-            {instrumentos.map(instrumento => (
+        <>
+            {filteredInstrumentos.map((instrumento) => (
                 <InstrumentoCard key={instrumento.id} instrumento={instrumento} />
             ))}
-        </div>
+        </>
     );
 };

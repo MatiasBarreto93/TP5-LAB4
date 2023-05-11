@@ -1,10 +1,23 @@
 import {Button, Container, Form, Nav, Navbar} from "react-bootstrap";
-import {useState} from "react";
-export const Header = ({ onSearchTermChange }:any) =>{
+import React, {useState} from "react";
 
-    const [searchTerm, setSearchTerm] = useState("");
+
+interface Props {
+    searchTerm: string;
+    onSearchTermChange: (searchTerm: string) => void;
+}
+
+export const Header = ({ searchTerm = "", onSearchTermChange }: Props) =>{
+
+    const [, setSearchTerm] = useState("");
 
     const handleSearch = (searchTerm: string) => {
+
+        onSearchTermChange(searchTerm);
+    };
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const searchTerm = event.target.value;
         setSearchTerm(searchTerm);
         onSearchTermChange(searchTerm);
     };
@@ -16,13 +29,12 @@ export const Header = ({ onSearchTermChange }:any) =>{
                 <Nav className="me-auto">
                     <Nav.Link href="/productos">Productos</Nav.Link>
                     <Nav.Link href="/dondeestamos">Donde Estamos</Nav.Link>
-                    <Nav.Link href="/admin">Administracion</Nav.Link>
-                    <Nav.Link href="/test">Test</Nav.Link>
+                    <Nav.Link href="/administracion">Administracion</Nav.Link>
                 </Nav>
                 <Form
                     className="d-flex w-50"
                     onSubmit={(e) => {
-                        e.preventDefault(); // evitar que se recargue la página al hacer submit
+                        e.preventDefault();
                     }}
                 >
                     <Form.Control
@@ -31,12 +43,9 @@ export const Header = ({ onSearchTermChange }:any) =>{
                         className="me-2"
                         aria-label="Search"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={handleInputChange}
                     />
-                    <Button
-                        variant="outline-success"
-                        onClick={() => handleSearch(searchTerm)}
-                    >
+                    <Button variant="outline-success" onClick={() => handleSearch(searchTerm)}>
                         Buscar
                     </Button>
                 </Form>

@@ -47,7 +47,7 @@ export const InstrumentoModal = ({ show, onHide, title, ins, fetchInstrumentos }
                 if (response.ok) {
                     onHide(); // Cerrar el modal si la solicitud fue exitosa
                     fetchInstrumentos(); //Actualizar la tabla
-                    toast.success(isNew ? 'Instrumento creado exitosamente' : 'Instrumento actualizado exitosamente', {
+                    toast.success(isNew ? 'Instrumento Creado' : 'Instrumento Actualizado ', {
                         position: "top-center"
                     })
                 } else {
@@ -69,6 +69,9 @@ export const InstrumentoModal = ({ show, onHide, title, ins, fetchInstrumentos }
                 .then(() => {
                     onHide();
                     fetchInstrumentos();
+                    toast.success("Instrumento Borrado", {
+                        position: "top-center"
+                    })
                 })
                 .catch(error => console.error(error));
         }
@@ -76,18 +79,11 @@ export const InstrumentoModal = ({ show, onHide, title, ins, fetchInstrumentos }
 
     //Validacion de TITULOS permitidos
     const validTitles = ["Nuevo Instrumento", "Editar Instrumento", "¿Borrar Instrumento?"];
-
     if (!validTitles.includes(title)) {
         return (
-            <Modal show={show} onHide={onHide}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Error</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Alert variant="danger">ERROR: No existe la funcion a la que se quiere acceder</Alert>
-                </Modal.Body>
-            </Modal>
-        )
+            toast.error("Error!, la funcion requerida no existe", {
+                position: "top-center"
+            }))
     }
 
     return (
