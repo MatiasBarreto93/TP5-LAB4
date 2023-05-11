@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {Instrumento} from "../../interfaces/instrumento.ts";
 import {PencilFill, Trash} from "react-bootstrap-icons";
-import {Button, Modal, Table} from "react-bootstrap";
+import {Button, Table} from "react-bootstrap";
 import {InstrumentoModal} from "./InstrumentoModal.tsx";
 
 
@@ -33,22 +33,6 @@ export const RandomTable = () => {
         setInstrumento(instrumento);
         setShowModal(true);
     };
-
-    //Modal de Delete
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-    const borrarInstrumento = () => {
-        if (instrumento) {
-            const id = instrumento.id;
-            fetch(`http://localhost:8080/api/v1/instrumentos/${id}`, {method: "DELETE"})
-                .then(() => {
-                    setShowDeleteModal(false);
-                    fetchInstrumentos();
-                })
-                .catch(error => console.error(error));
-        }
-    };
-
 
     return(
         <>
@@ -102,8 +86,7 @@ export const RandomTable = () => {
                                 size={24}
                                 title="Borrar instrumento"
                                 onClick={() => {
-                                    setInstrumento(ins);
-                                    setShowDeleteModal(true);
+                                    handleClick("¿Borrar Instrumento?", ins);
                                 }}
                                 onMouseEnter={() => {document.body.style.cursor = 'pointer'}}
                                 onMouseLeave={() => {document.body.style.cursor = 'default'}}
@@ -122,22 +105,6 @@ export const RandomTable = () => {
                     fetchInstrumentos={fetchInstrumentos}
                 />
             )}
-            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>¿Borrar instrumento?</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>Está seguro que desea eliminar el instrumento <strong>{instrumento?.nombre}</strong>?</p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-                        Cancelar
-                    </Button>
-                    <Button variant="danger" onClick={borrarInstrumento}>
-                        Eliminar
-                    </Button>
-                </Modal.Footer>
-            </Modal>
         </>
     )
 }
