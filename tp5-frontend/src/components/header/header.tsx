@@ -17,6 +17,7 @@ export const Header = ({ onSearchTermChange }:any) =>{
                     <Nav.Link href="/productos">Productos</Nav.Link>
                     <Nav.Link href="/dondeestamos">Donde Estamos</Nav.Link>
                     <Nav.Link href="/admin">Administracion</Nav.Link>
+                    <Nav.Link href="/test">Test</Nav.Link>
                 </Nav>
                 <Form
                     className="d-flex w-50"
