@@ -1,6 +1,7 @@
-import {Button, Col, Form, Modal, Row} from "react-bootstrap";
+import {Alert, Button, Col, Form, Modal, Row} from "react-bootstrap";
 import {Instrumento} from "../../interfaces/instrumento.ts";
 import React, { useState} from "react";
+import {toast} from "react-toastify";
 
 interface Props {
     show: boolean;
@@ -46,8 +47,9 @@ export const InstrumentoModal = ({ show, onHide, title, ins, fetchInstrumentos }
                 if (response.ok) {
                     onHide(); // Cerrar el modal si la solicitud fue exitosa
                     fetchInstrumentos(); //Actualizar la tabla
-                    //Agregar un modal para informar al usuario de la CREACION / EDICION Props => title y String (nombre objeto)
-                    //todo
+                    toast.success(isNew ? 'Instrumento creado exitosamente' : 'Instrumento actualizado exitosamente', {
+                        position: "top-center"
+                    })
                 } else {
                     throw new Error('Ha ocurrido un error'); // Mostrar mensaje de error si la solicitud falló
                 }
@@ -76,7 +78,16 @@ export const InstrumentoModal = ({ show, onHide, title, ins, fetchInstrumentos }
     const validTitles = ["Nuevo Instrumento", "Editar Instrumento", "¿Borrar Instrumento?"];
 
     if (!validTitles.includes(title)) {
-        return <div>Error</div>;
+        return (
+            <Modal show={show} onHide={onHide}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Error</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Alert variant="danger">ERROR: No existe la funcion a la que se quiere acceder</Alert>
+                </Modal.Body>
+            </Modal>
+        )
     }
 
     return (

@@ -5,10 +5,13 @@ import {DondeEstamos} from "./components/dondeEstamos/dondeEstamos.tsx";
 import {Productos} from "./components/producto/productos.tsx";
 import {Administracion} from "./components/admin/administracion.tsx";
 import {Test} from "./components/TestModal/test.tsx";
-
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 function App() {
 
   return (
+      <>
+      <ToastContainer/>
       <Router>
         <Routes>
             <Route path="/" element={<Home />} />
@@ -19,6 +22,7 @@ function App() {
             <Route path="/test" element={<Test/>}/>
         </Routes>
       </Router>
+      </>
   )
 }
 
